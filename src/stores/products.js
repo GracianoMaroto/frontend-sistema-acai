@@ -1,0 +1,111 @@
+import { defineStore } from 'pinia'
+import { api } from 'boot/axios'
+import { useAuthStore } from './auth'
+
+export const useProductStore = defineStore('product', {
+  state: () => ({
+    products: [],
+    loading: false,
+    metrics: null,
+    error: null,
+  }),
+
+  actions: {
+    async fetchProducts() {
+      this.loading = true
+      this.error = null
+
+      try {
+        const authStore = useAuthStore()
+
+        const { data } = await api.get('/products', {
+          headers: {
+            Authorization: `Bearer ${authStore.token}`,
+          },
+        })
+
+        this.products = data
+      } catch (error) {
+        this.error = error.response?.data?.message || 'Erro ao buscar produtos'
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async createProduct(payload) {
+      this.loading = true
+      this.error = null
+
+      try {
+        const authStore = useAuthStore()
+
+        await api.post('/products', payload, {
+          headers: {
+            Authorization: `Bearer ${authStore.token}`,
+          },
+        })
+
+        await this.fetchProducts()
+      } catch (error) {
+        this.error = error.response?.data?.message || 'Erro ao criar produto'
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async updateProduct(id, payload) {
+      this.loading = true
+      this.error = null
+
+      try {
+        const authStore = useAuthStore()
+
+        await api.patch(`/products/${id}`, payload, {
+          headers: {
+            Authorization: `Bearer ${authStore.token}`,
+          },
+        })
+
+        await this.fetchProducts()
+      } catch (error) {
+        this.error = error.response?.data?.message || 'Erro ao atualizar produto'
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async fetchMetrics() {
+      this.loading = true
+      try {
+        const { data } = await api.get('/products/metrics')
+        this.metrics = data
+      } catch (error) {
+        console.log(error)
+        this.error = 'Erro ao buscar métricas'
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async deleteProduct(id) {
+      this.loading = true
+      this.error = null
+
+      try {
+        const authStore = useAuthStore()
+
+        await api.delete(`/products/${id}`, {
+          headers: {
+            Authorization: `Bearer ${authStore.token}`,
+          },
+        })
+
+        this.products = this.products.filter((p) => p.id !== id)
+      } catch (error) {
+        this.error = error.response?.data?.message || 'Erro ao excluir produto'
+      } finally {
+        this.loading = false
+      }
+    },
+  },
+})
