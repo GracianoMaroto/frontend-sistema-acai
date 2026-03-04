@@ -1,82 +1,109 @@
 <template>
-  <q-page padding>
-    <div class="row items-center justify-between q-mb-md">
-      <div class="text-h5">Produtos</div>
+  <q-page class="q-pa-md">
+    <!-- HEADER -->
+    <div class="row items-center justify-between q-mb-lg">
+      <div>
+        <div class="text-overline user-name">Gestão</div>
+        <div class="text-h4 text-weight-bold user-name">Produtos</div>
+      </div>
 
-      <q-btn label="Novo Produto" color="primary" icon="add" @click="openDialog()" />
+      <q-btn label="NOVO PRODUTO" icon="add" class="primary-btn" unelevated @click="openDialog()" />
     </div>
 
-    <q-table
-      title="Lista de Produtos"
-      :rows="productStore.products"
-      :columns="columns"
-      row-key="id"
-      :loading="productStore.loading"
-      :grid="$q.screen.lt.md"
-      flat
-      bordered
-    >
-      <template v-slot:body-cell-price="props">
-        <q-td :props="props"> R$ {{ formatPrice(props.row.price) }} </q-td>
-      </template>
+    <!-- TABELA -->
+    <q-card class="table-card">
+      <q-table
+        :rows="productStore.products"
+        :columns="columns"
+        row-key="id"
+        :loading="productStore.loading"
+        :grid="$q.screen.lt.md"
+        flat
+      >
+        <!-- Preço formatado -->
+        <template v-slot:body-cell-price="props">
+          <q-td :props="props">
+            <span class="text-weight-medium"> R$ {{ formatPrice(props.row.price) }} </span>
+          </q-td>
+        </template>
 
-      <template v-slot:item="props">
-        <div class="col-12">
-          <q-card bordered flat class="q-mb-sm">
-            <q-card-section>
-              <div class="text-subtitle1 text-weight-bold">
-                {{ props.row.name }}
-              </div>
+        <!-- Ações Desktop -->
+        <template v-slot:body-cell-actions="props">
+          <q-td :props="props">
+            <q-btn flat round dense icon="edit" color="black" @click="openDialog(props.row)" />
+            <q-btn
+              flat
+              round
+              dense
+              icon="delete"
+              color="negative"
+              @click="deleteProduct(props.row.id)"
+            />
+          </q-td>
+        </template>
 
-              <div class="text-caption q-mt-xs">
-                {{ props.row.description }}
-              </div>
+        <!-- Layout Mobile -->
+        <template v-slot:item="props">
+          <div class="col-12">
+            <q-card class="product-card q-mb-md">
+              <q-card-section>
+                <div class="text-subtitle1 text-weight-bold">
+                  {{ props.row.name }}
+                </div>
 
-              <div class="text-body2 q-mt-sm">💰 R$ {{ formatPrice(props.row.price) }}</div>
-            </q-card-section>
+                <div class="text-caption text-grey-7 q-mt-xs">
+                  {{ props.row.description }}
+                </div>
 
-            <q-separator />
+                <div class="text-body1 text-weight-medium q-mt-sm user-name">
+                  R$ {{ formatPrice(props.row.price) }}
+                </div>
+              </q-card-section>
 
-            <q-card-actions align="right">
-              <q-btn flat icon="edit" color="primary" @click="openDialog(props.row)" />
-              <q-btn flat icon="delete" color="negative" @click="deleteProduct(props.row.id)" />
-            </q-card-actions>
-          </q-card>
-        </div>
-      </template>
-      <template v-slot:body-cell-actions="props">
-        <q-td :props="props">
-          <q-btn flat round dense icon="edit" color="primary" @click="openDialog(props.row)" />
-          <q-btn
-            flat
-            round
-            dense
-            icon="delete"
-            color="negative"
-            @click="deleteProduct(props.row.id)"
-          />
-        </q-td>
-      </template>
-    </q-table>
+              <q-separator />
 
-    <!-- Dialog -->
-    <q-dialog v-model="dialog">
-      <q-card style="min-width: 400px">
+              <q-card-actions align="right">
+                <q-btn flat icon="edit" color="icon-roxo" @click="openDialog(props.row)" />
+                <q-btn flat icon="delete" color="negative" @click="deleteProduct(props.row.id)" />
+              </q-card-actions>
+            </q-card>
+          </div>
+        </template>
+      </q-table>
+    </q-card>
+
+    <!-- DIALOG -->
+    <q-dialog v-model="dialog" persistent>
+      <q-card style="min-width: 420px" class="rounded-borders">
         <q-card-section>
-          <div class="text-h6">
+          <div class="text-h6 text-weight-bold">
             {{ editing ? 'Editar Produto' : 'Novo Produto' }}
           </div>
         </q-card-section>
 
         <q-card-section class="q-gutter-md">
-          <q-input v-model="form.name" label="Nome" outlined />
-          <q-input v-model="form.description" label="Descrição" outlined />
-          <q-input v-model.number="form.price" label="Preço" type="number" outlined />
+          <q-input v-model="form.name" label="Nome" outlined dense />
+
+          <q-input v-model="form.description" label="Descrição" outlined dense />
+
+          <q-input
+            v-model.number="form.price"
+            label="Preço"
+            type="number"
+            prefix="R$"
+            outlined
+            dense
+          />
         </q-card-section>
 
-        <q-card-actions align="right">
+        <q-card-actions align="right" class="q-pa-md">
           <q-btn flat label="Cancelar" v-close-popup />
-          <q-btn color="primary" :label="editing ? 'Atualizar' : 'Salvar'" @click="saveProduct" />
+          <q-btn
+            color="primary"
+            unelevated
+            :label="editing ? 'Atualizar' : 'Salvar'"
+            @click="saveProduct"
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -156,6 +183,7 @@ async function deleteProduct(id) {
 }
 
 function formatPrice(value) {
-  return Number(value).toFixed(2)
+  if (!value || isNaN(value)) return '0,00'
+  return Number(value).toFixed(2).replace('.', ',')
 }
 </script>

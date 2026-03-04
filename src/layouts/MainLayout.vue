@@ -1,50 +1,57 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated class="bg-primary text-white">
-      <q-toolbar>
-        <q-btn flat dense round icon="menu" @click="toggleDrawer" />
+  <q-layout view="lHh Lpr lFf" class="bg-bege">
+    <q-header class="system-header">
+      <q-toolbar class="q-px-lg">
+        <q-btn flat round icon="menu" class="icon-roxo" @click="toggleDrawer" />
 
-        <q-toolbar-title> Açaí na Garrafa </q-toolbar-title>
+        <div class="row items-center q-gutter-sm absolute-right">
+          <q-avatar size="34px" class="avatar-roxo">
+            {{ authStore.user?.name?.charAt(0) }}
+          </q-avatar>
 
-        <div class="q-mr-md">
-          {{ authStore.user?.name }}
+          <span class="user-name">
+            {{ authStore.user?.name }}
+          </span>
+
+          <q-btn flat round icon="logout" class="icon-roxo" @click="logout" />
         </div>
-
-        <q-btn flat round dense icon="logout" @click="logout" />
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="drawer" show-if-above bordered>
-      <div class="text-center" style="color: blue">
-        <q-img :src="logomarca" style="width: 150px; height: 150px" />
+    <q-drawer v-model="drawer" show-if-above bordered class="system-drawer">
+      <div class="column items-center q-pa-lg">
+        <q-img :src="logomarca" style="width: 110px" fit="contain" />
       </div>
-      <q-list>
+
+      <q-separator />
+
+      <q-list padding>
         <q-item clickable to="/dashboard" v-if="authStore.isAdmin">
           <q-item-section avatar>
             <q-icon name="dashboard" />
           </q-item-section>
-          <q-item-section> Dashboard </q-item-section>
+          <q-item-section class="text-weight-medium"> Dashboard </q-item-section>
         </q-item>
 
-        <q-item v-if="authStore.isAdmin" clickable to="/products">
+        <q-item clickable to="/products" v-if="authStore.isAdmin">
           <q-item-section avatar>
             <q-icon name="inventory" />
           </q-item-section>
-          <q-item-section> Produtos </q-item-section>
+          <q-item-section class="text-weight-medium"> Produtos </q-item-section>
         </q-item>
 
         <q-item clickable to="/orders">
           <q-item-section avatar>
             <q-icon name="receipt_long" />
           </q-item-section>
-          <q-item-section> Pedidos </q-item-section>
+          <q-item-section class="text-weight-medium"> Pedidos </q-item-section>
         </q-item>
 
         <q-item clickable to="/customers">
           <q-item-section avatar>
             <q-icon name="groups" />
           </q-item-section>
-          <q-item-section> Clientes </q-item-section>
+          <q-item-section class="text-weight-medium"> Clientes </q-item-section>
         </q-item>
       </q-list>
     </q-drawer>

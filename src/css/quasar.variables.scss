@@ -12,14 +12,431 @@
 // to match your app's branding.
 // Tip: Use the "Theme Builder" on Quasar's documentation website.
 
-$primary: #1976d2;
-$secondary: #26a69a;
-$accent: #9c27b0;
+:root {
+  --roxo-principal: #5a2d82;
+  --roxo-escuro: #3e1f5c;
+  --roxo-claro: #8e5fbf;
+  --creme: #f4eedc;
+  --font-title: 'Anton', sans-serif;
+  --font-body: 'Montserrat', sans-serif;
+}
+.before-enter {
+  opacity: 0;
+  transform: translateY(30px);
+}
+.enter {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.6s ease;
+}
+.glass-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 4px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+.glass-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+.section-title {
+  font-family: var(--font-title);
+  font-size: clamp(2rem, 4vw, 3rem);
+  letter-spacing: 1px;
+  font-weight: bold;
+  color: var(--roxo-principal);
+  text-transform: uppercase;
+}
+.badge {
+  display: inline-block;
+  background: var(--roxo-principal);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+.cta-btn {
+  background: linear-gradient(135deg, #25d366, #1ebe5d);
+  border-radius: 14px;
+  padding: 14px 28px;
+  font-weight: 600;
+}
+@media (max-width: 600px) {
+  .section {
+    padding: 8px 16px;
+  }
+  .glass-card {
+    border-radius: 24px;
+  }
+}
+.navbar {
+  overflow: hidden;
+  background-color: #3e1f5c;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+.navbar a {
+  float: left;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+@media (max-width: 600px) {
+  .navbar a {
+    float: left;
+    display: block;
+    color: #f2f2f2;
+    text-align: center;
+    text-decoration: none;
+    padding: 14px 16px;
+  }
+}
+.navbar a:hover {
+  background: #ddd;
+  color: #5a2d82;
+}
 
-$dark: #1d1d1d;
-$dark-page: #121212;
+.orders-page,
+.order-details {
+  background: var(--creme);
+  min-height: 100vh;
+  padding: 40px 24px;
+  font-family: var(--font-body);
+}
 
-$positive: #21ba45;
-$negative: #c10015;
-$info: #31ccec;
-$warning: #f2c037;
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.order-id {
+  font-weight: 700;
+  color: var(--roxo-principal);
+}
+
+.order-customer {
+  font-size: 0.95rem;
+  margin-top: 6px;
+}
+
+.order-meta {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 4px;
+}
+
+.order-total {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: var(--roxo-escuro);
+}
+
+.order-total-big {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--roxo-principal);
+}
+
+.status-badge {
+  margin-top: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+}
+
+.status-PENDING {
+  background: gray;
+}
+.status-IN_COURSE {
+  background: var(--roxo-claro);
+}
+.status-FINALIZED {
+  background: #2e7d32;
+}
+.status-CANCELED {
+  background: #c62828;
+}
+
+.section-subtitle {
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--roxo-principal);
+}
+
+.item-row,
+.payment-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.remaining {
+  margin-top: 12px;
+  font-weight: 600;
+  color: #c62828;
+}
+
+.actions-bar {
+  margin-top: 30px;
+  display: flex;
+  gap: 12px;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, var(--roxo-principal), var(--roxo-escuro));
+  color: white;
+  border-radius: 14px;
+  font-weight: 600;
+  box-shadow: 0 10px 20px rgba(90, 45, 130, 0.25);
+  transition: 0.2s ease;
+}
+
+.primary-btn:hover {
+  transform: translateY(-2px);
+}
+
+.success-btn {
+  background: #2e7d32;
+  color: white;
+}
+
+.danger-btn {
+  background: #c62828;
+  color: white;
+}
+
+.add-payment-wrapper {
+  padding: 20px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #f5f0ff 0%, #ffffff 100%);
+  border: 1px solid rgba(110, 72, 170, 0.2);
+}
+
+.add-payment-header {
+  font-weight: 600;
+  margin-bottom: 14px;
+  color: var(--roxo-principal);
+}
+
+.add-payment-btn {
+  background: var(--roxo-principal);
+  color: white;
+  font-weight: 600;
+  border-radius: 10px;
+}
+
+.add-payment-btn:hover {
+  background: var(--roxo-escuro);
+}
+
+.payment-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f5ff 100%);
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(110, 72, 170, 0.15);
+  box-shadow: 0 6px 16px rgba(110, 72, 170, 0.08);
+  transition: all 0.2s ease;
+}
+
+.payment-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(110, 72, 170, 0.12);
+}
+
+.payment-method {
+  font-weight: 600;
+  color: var(--roxo-principal);
+}
+
+.payment-date {
+  font-size: 0.75rem;
+  color: #777;
+}
+
+.payment-amount {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--roxo-escuro);
+}
+.summary-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+}
+
+.summary-client {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.summary-meta {
+  font-size: 0.85rem;
+  color: #777;
+  margin-top: 4px;
+}
+
+.summary-total {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: var(--roxo-principal);
+  text-align: right;
+}
+.add-payment-wrapper {
+  padding: 20px;
+  border-radius: 16px;
+  background: #fafafa;
+  margin-top: 16px;
+}
+
+.add-payment-title {
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--roxo-principal);
+}
+
+.add-payment-grid {
+  display: grid;
+  gap: 14px;
+}
+
+@media (min-width: 768px) {
+  .add-payment-grid {
+    grid-template-columns: 2fr 1fr 1fr;
+    align-items: center;
+  }
+}
+.payment-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-radius: 14px;
+  background: white;
+  margin-top: 12px;
+  border: 1px solid #eee;
+}
+
+.payment-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.payment-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.payment-method {
+  font-weight: 600;
+}
+
+.payment-amount {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+.new-order-btn {
+  background: linear-gradient(135deg, var(--roxo-principal), var(--roxo-escuro));
+  color: white;
+  border-radius: 14px;
+  padding: 10px 20px;
+  font-weight: 600;
+  box-shadow: 0 10px 20px rgba(90, 45, 130, 0.25);
+}
+
+.new-order-btn:hover {
+  transform: translateY(-2px);
+}
+.bg-bege {
+  background: #f8f4e8;
+}
+.system-header {
+  background: var(--creme);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+.system-title {
+  font-family: var(--font-title);
+  color: var(--roxo-principal);
+  letter-spacing: 1px;
+}
+
+.avatar-roxo {
+  background: var(--roxo-principal);
+  color: white;
+}
+
+.user-name {
+  font-weight: 600;
+  color: var(--roxo-escuro);
+}
+.icon-roxo {
+  color: var(--roxo-principal);
+}
+.system-drawer {
+  background: #fcf8f0;
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.system-drawer .q-item {
+  border-radius: 10px;
+  margin: 6px 12px;
+  color: var(--roxo-principal);
+}
+
+.system-drawer .q-item.q-router-link--active {
+  background: rgba(90, 45, 130, 0.08);
+  color: var(--roxo-principal);
+  font-weight: 600;
+}
+.dashboard-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 8px;
+  box-shadow: 0 12px 30px rgba(90, 45, 130, 0.08);
+  transition: all 0.25s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px rgba(90, 45, 130, 0.12);
+}
+
+.metric-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #8a8a8a;
+}
+
+.metric-number {
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: var(--roxo-principal);
+  margin-top: 6px;
+}
+.table-card {
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+  padding: 8px;
+}
+.product-card {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+}

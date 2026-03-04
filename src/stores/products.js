@@ -32,6 +32,11 @@ export const useProductStore = defineStore('product', {
       }
     },
 
+    async fetchPricesByChannel(channelId) {
+      const { data } = await api.get(`/product-prices/by-channel/${channelId}`)
+      return data
+    },
+
     async createProduct(payload) {
       this.loading = true
       this.error = null
