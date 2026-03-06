@@ -3,101 +3,193 @@
     <!-- COLUNA PRODUTOS -->
     <div class="col-12 col-md-8 q-pa-md">
       <!-- CANAL -->
-      <q-select
-        v-model="order.customerId"
-        :options="customerOptions"
-        label="Cliente"
-        option-label="name"
-        option-value="id"
-        emit-value
-        map-options
-        outlined
-        class="q-mb-md"
-      />
-      <q-select
-        v-model="order.saleChannelId"
-        :options="saleChannelOptions"
-        label="Canal de Venda"
-        option-label="name"
-        option-value="id"
-        emit-value
-        map-options
-        outlined
-        class="q-mb-md"
-      />
+      <div class="q-gutter-sm">
+        <q-select
+          class="system-select"
+          v-model="order.customerId"
+          :options="customerOptions"
+          dense
+          label="Cliente"
+          option-label="name"
+          option-value="id"
+          emit-value
+          map-options
+          outlined
+          use-input
+          input-debounce="400"
+          @filter="filterCustomers"
+          ><template v-slot:append>
+            <q-btn
+              icon="person_add"
+              flat
+              round
+              size="sm"
+              @click.stop="openCustomerDialog"
+            /> </template
+        ></q-select>
+        <q-select
+          class="system-select q-mb-md"
+          v-model="order.saleChannelId"
+          :options="saleChannelOptions"
+          label="Canal de Venda"
+          option-label="name"
+          option-value="id"
+          emit-value
+          map-options
+          outlined
+        />
+      </div>
 
       <div v-if="order.saleChannelId">
         <q-card
           v-for="variant in productVariants"
           :key="variant.id"
-          class="q-mb-sm"
+          class="product-variant-card q-mb-sm"
           clickable
           @click="addItem(variant)"
         >
-          <q-card-section>
-            <div class="text-subtitle1">
+          <q-card-section class="product-variant-body">
+            <div class="variant-name">
               {{ variant.name }}
             </div>
 
-            <div class="text-caption">
-              R$ {{ Number(variant.price).toFixed(2) }} • Estoque: {{ variant.stockQuantity }}
+            <div class="variant-meta">
+              <span class="variant-price"> R$ {{ Number(variant.price).toFixed(2) }} </span>
+
+              <span class="variant-stock" :class="{ low: variant.stockQuantity <= 5 }">
+                Estoque: {{ variant.stockQuantity }}
+              </span>
             </div>
           </q-card-section>
         </q-card>
       </div>
     </div>
 
-    <!-- COLUNA CARRINHO -->
-    <div class="col-12 col-md-4 bg-grey-2 q-pa-md">
-      <div class="text-h6 q-mb-md">Carrinho</div>
+    <div class="col-12 col-md-4 q-pa-md">
+      <q-card class="cart-card full-heigth">
+        <q-card-section class="cart-header">
+          <div class="cart-title">Carrinho</div>
+        </q-card-section>
 
-      <div v-if="order.items.length === 0">Nenhum item adicionado</div>
+        <q-separator />
 
-      <div v-for="item in order.items" :key="item.productVariantId" class="q-mb-sm">
-        <div class="row items-center justify-between">
-          <div>
-            {{ getVariantName(item.productVariantId) }}
+        <q-card-section class="cart-scroll">
+          <div v-if="order.items.length === 0" class="text-grey text-center q-pa-md">
+            Nenhum item adicionado
           </div>
 
-          <div class="row items-center">
-            <q-btn dense flat icon="remove" @click="decrease(item)" />
-            <span class="q-mx-sm">{{ item.quantity }}</span>
-            <q-btn dense flat icon="add" @click="increase(item)" />
+          <q-card
+            v-for="item in order.items"
+            :key="item.productVariantId"
+            flat
+            bordered
+            class="cart-item q-mb-sm"
+          >
+            <q-card-section class="row items-center justify-between">
+              <div class="text-weight-medium">
+                {{ getVariantName(item.productVariantId) }}
+              </div>
+
+              <div class="row items-center">
+                <q-btn dense round flat icon="remove" @click="decrease(item)" />
+
+                <div class="q-mx-sm text-weight-medium">
+                  {{ item.quantity }}
+                </div>
+
+                <q-btn dense round flat icon="add" @click="increase(item)" />
+              </div>
+            </q-card-section>
+          </q-card>
+        </q-card-section>
+
+        <q-separator />
+
+        <!-- TOTAL -->
+        <q-card-section>
+          <div class="cart-total">
+            <div>Total</div>
+            <div>R$ {{ total.toFixed(2) }}</div>
+          </div>
+        </q-card-section>
+
+        <q-card-section class="q-gutter-sm">
+          <q-select
+            class="system-select"
+            v-model="selectedPaymentMethod"
+            :options="paymentMethods"
+            label="Forma de Pagamento"
+            option-label="name"
+            option-value="id"
+            emit-value
+            map-options
+            outlined
+            dense
+          />
+
+          <q-input
+            v-model.number="paymentAmount"
+            label="Valor Pago"
+            prefix="R$"
+            step="0.1"
+            outlined
+            dense
+          />
+        </q-card-section>
+
+        <q-card-actions class="q-pa-md">
+          <q-btn
+            label="Finalizar Pedido"
+            class="full-width primary-btn"
+            size="lg"
+            :disable="!canFinalize || submitting"
+            :loading="submitting"
+            @click="submitOrder"
+          />
+        </q-card-actions>
+      </q-card>
+    </div>
+    <q-dialog v-model="customerDialog" persistent>
+      <q-card class="system-dialog" style="width: 480px; max-width: 95vw">
+        <div class="system-dialog-header">
+          <div class="system-dialog-title">Novo Cliente</div>
+        </div>
+
+        <div class="system-dialog-body q-gutter-md">
+          <q-input v-model="customerForm.name" label="Nome" outlined dense />
+
+          <q-input v-model="customerForm.phone" label="Telefone" outlined dense />
+
+          <q-input v-model="customerForm.street" label="Rua" outlined dense />
+
+          <div class="row">
+            <div class="col q-mr-sm">
+              <q-input v-model="customerForm.number" label="Número" outlined dense />
+            </div>
+
+            <div class="col">
+              <q-input v-model="customerForm.zipCode" label="CEP" outlined dense />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col q-mr-sm">
+              <q-input v-model="customerForm.city" label="Cidade" outlined dense />
+            </div>
+
+            <div class="col">
+              <q-input v-model="customerForm.state" label="Estado" outlined dense />
+            </div>
           </div>
         </div>
-      </div>
 
-      <q-separator class="q-my-md" />
-      <div class="text-right text-subtitle1 q-mb-md">Total: R$ {{ total.toFixed(2) }}</div>
-      <q-select
-        v-model="selectedPaymentMethod"
-        :options="paymentMethods"
-        label="Forma de Pagamento"
-        option-label="name"
-        option-value="id"
-        emit-value
-        map-options
-        outlined
-        class="q-mb-sm"
-      />
+        <div class="system-dialog-footer">
+          <q-btn flat label="Cancelar" v-close-popup class="dialog-cancel-btn" />
 
-      <q-input
-        v-model.number="paymentAmount"
-        label="Valor Pago"
-        type="number"
-        step="0.01"
-        min="0"
-      />
-
-      <q-btn
-        color="icon-roxo"
-        label="Finalizar Pedido"
-        class="full-width"
-        :disable="!canFinalize || submitting"
-        :loading="submitting"
-        @click="submitOrder"
-      />
-    </div>
+          <q-btn label="Salvar" class="dialog-save-btn" @click="createCustomer" />
+        </div>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -109,6 +201,8 @@ import { useRouter } from 'vue-router'
 // import { useQuasar } from 'quasar'
 import { watch } from 'vue'
 import { api } from 'src/boot/axios'
+import { notifyError, notifySuccess } from 'src/utils/notify'
+import { confirmDialog } from 'src/utils/confirm'
 
 const router = useRouter()
 // const $q = useQuasar()
@@ -121,6 +215,59 @@ const selectedPaymentMethod = ref(null)
 const paymentAmount = ref(0)
 const paymentMethods = ref([])
 const customerOptions = ref([])
+const customerDialog = ref(false)
+
+const customerForm = ref({
+  name: '',
+  phone: '',
+  street: '',
+  number: '',
+  city: '',
+  state: '',
+  zipCode: '',
+})
+
+const openCustomerDialog = () => {
+  customerForm.value = {
+    name: '',
+    phone: '',
+    street: '',
+    number: '',
+    city: '',
+    state: '',
+    zipCode: '',
+  }
+
+  customerDialog.value = true
+}
+
+const loadPaymentMethods = async () => {
+  try {
+    const res = await api.get('/payment-methods')
+    paymentMethods.value = res.data
+  } catch (err) {
+    console.error('Erro ao carregar formas de pagamento', err)
+  }
+}
+
+const createCustomer = async () => {
+  const { data } = await api.post('/customers', customerForm.value)
+
+  customerOptions.value.push(data)
+
+  order.value.customerId = data.id
+
+  customerDialog.value = false
+}
+const filterCustomers = async (val, update) => {
+  const { data } = await api.get('/customers', {
+    params: { search: val },
+  })
+
+  update(() => {
+    customerOptions.value = data
+  })
+}
 
 const order = ref({
   saleChannelId: null,
@@ -151,22 +298,14 @@ const addItem = (variant) => {
 
   if (existing) {
     if (existing.quantity >= variant.stockQuantity) {
-      window.alert('Estoque máximo atingido')
-      // $q.notify({
-      //   type: 'warning',
-      //   message: 'Estoque máximo atingido',
-      // })
+      notifyError('Estoque máximo atingido')
       return
     }
 
     existing.quantity++
   } else {
     if (variant.stockQuantity <= 0) {
-      window.alert('Produto sem estoque')
-      // $q.notify({
-      //   type: 'warning',
-      //   message: 'Produto sem estoque',
-      // })
+      notifyError('Produto sem estoque')
       return
     }
 
@@ -183,11 +322,7 @@ const increase = (item) => {
   if (!variant) return
 
   if (item.quantity >= variant.stockQuantity) {
-    window.alert('Estoque máximo atingido')
-    // $q.notify({
-    //   type: 'warning',
-    //   message: 'Estoque máximo atingido',
-    // })
+    notifyError('Estoque máximo atingido')
     return
   }
 
@@ -240,11 +375,18 @@ const submitOrder = async () => {
           : undefined,
     }
 
-    await orderStore.createOrder(payload)
-
-    window.alert('Pedido criado com sucesso!')
-
-    // 🔥 resetar formulário
+    const confirmed = await confirmDialog(
+      'Criar Pedido',
+      'Tem certeza que deseja criar este pedido?',
+    )
+    if (!confirmed) return
+    try {
+      await orderStore.createOrder(payload)
+      notifySuccess('Pedido criado com sucesso')
+    } catch (error) {
+      console.log(error)
+      notifyError('Houve um problema ao criar o pedido')
+    }
     order.value = {
       saleChannelId: null,
       customerId: null,
@@ -256,7 +398,7 @@ const submitOrder = async () => {
 
     router.push('/orders')
   } catch (error) {
-    window.alert(error.response?.data?.message || 'Erro ao criar pedido')
+    notifyError(error.response?.data?.message || 'Erro ao criar pedido')
   } finally {
     submitting.value = false
   }
@@ -273,9 +415,6 @@ watch(
 onMounted(async () => {
   await productStore.fetchProducts()
   await orderStore.fetchSaleChannels()
-  const { dataPayments } = await api.get('/payment-methods')
-  paymentMethods.value = dataPayments
-  // const { dataCustomers } = await api.get('/customers')
-  // customerOptions.value = dataCustomers
+  await loadPaymentMethods()
 })
 </script>

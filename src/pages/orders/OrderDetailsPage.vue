@@ -2,12 +2,11 @@
   <q-page class="order-details" v-if="order">
     <div class="section-header">
       <div>
-        <div class="badge">Detalhes</div>
+        <div class="user-name">Detalhes</div>
         <div class="section-title">Pedido #{{ order.id.slice(0, 8) }}</div>
       </div>
     </div>
 
-    <!-- RESUMO -->
     <q-card class="glass-card q-mt-lg">
       <q-card-section class="summary-section">
         <div class="summary-left">
@@ -16,7 +15,9 @@
           </div>
 
           <div class="summary-meta">
-            {{ order.saleChannel.name }} • {{ formatDate(order.createdAt) }}
+            {{ order.saleChannel.name }}
+            <br />
+            {{ formatDate(order.createdAt) }}
           </div>
         </div>
 
@@ -30,7 +31,6 @@
       </q-card-section>
     </q-card>
 
-    <!-- ITENS -->
     <q-card class="glass-card q-mt-md">
       <q-card-section>
         <div class="section-subtitle">Itens</div>
@@ -46,11 +46,9 @@
       </q-card-section>
     </q-card>
 
-    <!-- PAGAMENTOS -->
     <q-card class="glass-card q-mt-md">
       <q-card-section>
         <div class="section-subtitle">Payments</div>
-        <!-- ADICIONAR PAGAMENTO -->
         <div class="add-payment-wrapper">
           <div class="add-payment-title">New Payment</div>
 
@@ -78,9 +76,9 @@
             />
 
             <q-btn
-              label="Add"
+              label="Adicionar Pagamento"
               icon="add"
-              color="icon-roxo"
+              class="primary-btn"
               unelevated
               no-caps
               @click="addPayment"
@@ -123,13 +121,12 @@
       </q-card-section>
     </q-card>
 
-    <!-- AÇÕES -->
     <div class="actions-bar">
       <q-btn v-if="canStart" label="Iniciar" class="primary-btn" @click="startOrder" />
 
-      <q-btn v-if="canFinalize" label="Finalizar" class="success-btn" @click="finalizeOrder" />
+      <q-btn v-if="canFinalize" label="Finalizar" class="finalizar-btn" @click="finalizeOrder" />
 
-      <q-btn v-if="canCancel" label="Cancelar" class="danger-btn" @click="cancelOrder" />
+      <q-btn v-if="canCancel" label="Cancelar" class="cancelar-btn" @click="cancelOrder" />
     </div>
   </q-page>
 </template>
@@ -139,6 +136,8 @@ import { ref, computed, onMounted } from 'vue'
 import { useOrdersStore } from 'stores/orders'
 import { useRoute } from 'vue-router'
 import { api } from 'src/boot/axios'
+import { notifyError, notifySuccess } from 'src/utils/notify'
+import { confirmDialog } from 'src/utils/confirm'
 
 const route = useRoute()
 const orderStore = useOrdersStore()
@@ -153,9 +152,9 @@ const total = computed(() => {
   }, 0)
 })
 
-const canStart = computed(() => order.value?.orderStatus.name === 'PENDING')
-const canFinalize = computed(() => order.value?.orderStatus.name === 'IN_COURSE')
-const canCancel = computed(() => order.value?.orderStatus.name !== 'CANCELED')
+const canStart = computed(() => order.value?.orderStatus.name === 'Pendente')
+const canFinalize = computed(() => order.value?.orderStatus.name === 'Em_Curso')
+const canCancel = computed(() => order.value?.orderStatus.name !== 'Cancelado')
 const newPaymentMethod = ref(null)
 const newPaymentAmount = ref(0)
 const paymentMethods = ref([])
@@ -170,35 +169,59 @@ const loadOrder = async () => {
 }
 
 const startOrder = async () => {
-  await orderStore.startOrder(order.value.id)
-  await loadOrder()
+  const confirmed = await confirmDialog(
+    'Iniciar pedido',
+    'Tem certeza que deseja iniciar este pedido?',
+  )
+  if (!confirmed) return
+  try {
+    await orderStore.startOrder(order.value.id)
+    await loadOrder()
+    notifySuccess('Pedido iniciado com sucesso')
+  } catch (error) {
+    console.log(error)
+    notifyError('Houve um problema ao iniciar este pedido')
+  }
 }
 const loadPaymentMethods = async () => {
   const { data } = await api.get('/payment-methods')
   paymentMethods.value = data
 }
 const addPayment = async () => {
+  const confirmed = await confirmDialog(
+    'Adicionar pagamento',
+    'Tem certeza que deseja adicionar este pagamento?',
+  )
+  if (!confirmed) return
   try {
     await api.post(`/orders/${order.value.id}/payments`, {
       paymentMethodId: newPaymentMethod.value,
       amount: String(newPaymentAmount.value.toFixed(2)),
     })
 
-    // reset
     newPaymentMethod.value = null
     newPaymentAmount.value = 0
 
     await loadOrder()
-  } catch (err) {
-    alert(err.response?.data?.message || 'Erro ao adicionar pagamento')
+    notifySuccess('Pagamento adicionado com sucesso')
+  } catch (error) {
+    console.log(error)
+    notifyError('Houve um problema ao adicionar este pagamento')
   }
 }
 const removePayment = async (paymentId) => {
+  const confirmed = await confirmDialog(
+    'Remover pagamento',
+    'Tem certeza que deseja remover este pagamento?',
+  )
+  if (!confirmed) return
   try {
     await api.delete(`/orders/${order.value.id}/payments/${paymentId}`)
     await loadOrder()
-  } catch (err) {
-    alert(err.response?.data?.message || 'Erro ao remover pagamento')
+    notifySuccess('Pagamento removido com sucesso')
+  } catch (error) {
+    console.log(error)
+    notifyError('Houve um problema ao remover este pagamento')
   }
 }
 
@@ -209,13 +232,35 @@ const paymentProgress = computed(() => {
 })
 
 const finalizeOrder = async () => {
-  await orderStore.finalizeOrder(order.value.id)
-  await loadOrder()
+  const confirmed = await confirmDialog(
+    'Finalizar pedido',
+    'Tem certeza que deseja finalizar este pedido?',
+  )
+  if (!confirmed) return
+  try {
+    await orderStore.finalizeOrder(order.value.id)
+    await loadOrder()
+    notifySuccess('Pedido finalizado com sucesso')
+  } catch (error) {
+    console.log(error)
+    notifyError('Houve um problema ao finalizar este pedido')
+  }
 }
 
 const cancelOrder = async () => {
-  await orderStore.cancelOrder(order.value.id)
-  await loadOrder()
+  const confirmed = await confirmDialog(
+    'Cancelar pedido',
+    'Tem certeza que deseja cancelar este pedido?',
+  )
+  if (!confirmed) return
+  try {
+    await orderStore.cancelOrder(order.value.id)
+    await loadOrder()
+    notifySuccess('Pedido cancelado com sucesso')
+  } catch (error) {
+    console.log(error)
+    notifyError('Houve um problema ao cancelar este pedido')
+  }
 }
 
 onMounted(async () => {

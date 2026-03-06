@@ -2,18 +2,18 @@
   <q-layout view="lHh Lpr lFf" class="bg-bege">
     <q-header class="system-header">
       <q-toolbar class="q-px-lg">
-        <q-btn flat round icon="menu" class="icon-roxo" @click="toggleDrawer" />
+        <q-btn flat round icon="menu" class="icon-bege" @click="toggleDrawer" />
 
         <div class="row items-center q-gutter-sm absolute-right">
           <q-avatar size="34px" class="avatar-roxo">
             {{ authStore.user?.name?.charAt(0) }}
           </q-avatar>
 
-          <span class="user-name">
+          <span class="user">
             {{ authStore.user?.name }}
           </span>
 
-          <q-btn flat round icon="logout" class="icon-roxo" @click="logout" />
+          <q-btn flat round icon="logout" class="icon-bege" @click="logout" />
         </div>
       </q-toolbar>
     </q-header>
@@ -66,7 +66,10 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from 'stores/auth'
+
 import logomarca from '/src/assets/LogomarcaAçai.png'
+
+import { notifyError, notifySuccess } from 'src/utils/notify'
 
 const drawer = ref(false)
 const router = useRouter()
@@ -76,22 +79,14 @@ const toggleDrawer = () => {
   drawer.value = !drawer.value
 }
 
-const logout = () => {
+const logout = async () => {
   try {
     authStore.logout()
-    window.alert('Logout realizado com sucesso')
-    router.push('/login')
-    // $q.notify({
-    //   type: 'positive',
-    //   message: 'Logout realizado com sucesso!',
-    // })
+    await router.push('/login')
+    notifySuccess('Logout realizado com sucesso')
   } catch (error) {
     console.log(error)
-    window.alert('Erro ao fazer logout')
-    // $q.notify({
-    //   type: 'negative',
-    //   message: 'Errou ao fazer logout',
-    // })
+    notifyError('Erro ao fazer logout')
   }
 }
 </script>

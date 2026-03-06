@@ -1,19 +1,15 @@
 <template>
   <q-page class="orders-page">
-    <div class="section-header">
-      <div>
-        <div class="badge">Gestão</div>
-        <div class="section-title">Pedidos</div>
-      </div>
-
+    <div class="user-name">Gestão</div>
+    <div class="row items-center justify-between q-mb-lg">
+      <div class="section-title">Pedidos</div>
       <q-btn
-        label="New Order"
+        label="Pedido"
         icon="add"
-        color="positive"
         unelevated
         no-caps
         size="md"
-        class="new-order-btn"
+        class="primary-btn"
         @click="goToNewOrder"
       />
     </div>
@@ -65,92 +61,9 @@ import { useOrdersStore } from 'stores/orders'
 const orderStore = useOrdersStore()
 const router = useRouter()
 
-// const columns = [
-//   {
-//     name: 'orderDate',
-//     label: 'Data',
-//     field: 'orderDate',
-//     align: 'left',
-//     format: (val) => new Date(val).toLocaleDateString(),
-//   },
-//   {
-//     name: 'customer',
-//     label: 'Cliente',
-//     field: (row) => row.customer?.name || 'Sem cliente',
-//     align: 'left',
-//   },
-//   {
-//     name: 'saleChannel',
-//     label: 'Canal',
-//     field: (row) => row.saleChannel?.name,
-//     align: 'left',
-//   },
-//   {
-//     name: 'orderStatus',
-//     label: 'Status',
-//     field: (row) => row.orderStatus,
-//     align: 'center',
-//   },
-//   {
-//     name: 'totalAmount',
-//     label: 'Total',
-//     field: 'totalAmount',
-//     align: 'right',
-//   },
-//   {
-//     name: 'actions',
-//     label: 'Ações',
-//     field: 'actions',
-//     align: 'center',
-//   },
-// ]
-
-// const confirmOpen = ref(false)
-// const selectedOrderId = ref(null)
-
-// async function confirmAction() {
-//   try {
-//     await orderStore.startOrder(selectedOrderId.value)
-//     window.alert('Pedido iniciado com sucesso')
-//     confirmOpen.value = false
-//     selectedOrderId.value = null
-//     // $q.notify({
-//     //   type: 'positive',
-//     //   message: 'Pedido iniciado com sucesso',
-//     // })
-//     // await orderStore.fetchOrders()
-//   } catch (error) {
-//     console.log(error)
-//     window.alert('Erro ao iniciar pedido')
-//     // Notify.create({
-//     //   type: 'negative',
-//     //   message: 'Erro ao iniciar pedido',
-//     // })
-//   }
-// }
-
-// const formatMoney = (value) => {
-//   return Number(value).toFixed(2)
-// }
-
 const goToNewOrder = () => {
   router.push('/orders/new')
 }
-
-// const getStatusColor = (status) => {
-//   switch (status) {
-//     case 'PENDING':
-//       return 'grey'
-//     case 'IN_COURSE':
-//       return 'primary'
-//     case 'FINALIZED':
-//       return 'positive'
-//     case 'CANCELED':
-//       return 'negative'
-//     default:
-//       return 'grey'
-//   }
-// }
 
 const goToDetails = (id) => {
   router.push(`/orders/${id}`)

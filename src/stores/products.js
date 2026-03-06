@@ -82,7 +82,14 @@ export const useProductStore = defineStore('product', {
     async fetchMetrics() {
       this.loading = true
       try {
-        const { data } = await api.get('/products/metrics')
+        const authStore = useAuthStore()
+
+        const { data } = await api.get('/products/metrics', {
+          headers: {
+            Authorization: `Bearer ${authStore.token}`,
+          },
+        })
+
         this.metrics = data
       } catch (error) {
         console.log(error)

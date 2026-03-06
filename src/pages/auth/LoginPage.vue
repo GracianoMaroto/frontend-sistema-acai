@@ -1,11 +1,13 @@
 <template>
   <q-layout>
     <q-page-container>
-      <q-page class="flex flex-center bg-grey-2">
-        <q-card class="login-card q-pa-lg">
-          <q-card-section class="text-center">
-            <div class="text-h5 text-weight-bold">Açaí na Garrafa</div>
-            <div class="text-subtitle2 text-grey">Sistema de Vendas</div>
+      <q-page class="login-page flex flex-center">
+        <q-img :src="logomarca" style="width: 200px; height: 200px" />
+        <q-card class="login-card">
+          <q-card-section class="login-header text-center">
+            <div class="login-title">Açaí na Garrafa</div>
+
+            <div class="login-subtitle">Sistema de Vendas</div>
           </q-card-section>
 
           <q-card-section>
@@ -30,13 +32,7 @@
                 :rules="[(val) => !!val || 'Informe a senha']"
               />
 
-              <q-btn
-                label="Entrar"
-                type="submit"
-                color="primary"
-                class="full-width"
-                :loading="loading"
-              />
+              <q-btn label="Entrar" type="submit" class="login-btn full-width" :loading="loading" />
             </q-form>
           </q-card-section>
         </q-card>
@@ -49,7 +45,8 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from 'stores/auth'
-// import { useQuasar } from 'quasar'
+import logomarca from 'assets/LogomarcaAçai.png'
+import { notifyError, notifySuccess } from 'src/utils/notify'
 
 const email = ref('')
 const password = ref('')
@@ -57,27 +54,17 @@ const loading = ref(false)
 
 const authStore = useAuthStore()
 const router = useRouter()
-// const $q = useQuasar()
 
 const handleLogin = async () => {
   loading.value = true
 
   try {
     await authStore.login(email.value, password.value)
-    window.alert('Login realizado com sucesso')
-    // $q.notify({
-    //   type: 'positive',
-    //   message: 'Login realizado com sucesso!',
-    // })
-
-    router.push('/')
+    await router.push('/')
+    notifySuccess('Login realizado com sucesso')
   } catch (error) {
     console.log(error)
-    window.alert('Email ou senha invalidos')
-    // $q.notify({
-    //   type: 'negative',
-    //   message: 'E-mail ou senha inválidos',
-    // })
+    notifyError('Email ou senha invalidos')
   } finally {
     loading.value = false
   }
