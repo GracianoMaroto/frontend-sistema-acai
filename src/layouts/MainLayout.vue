@@ -82,7 +82,7 @@ const toggleDrawer = () => {
 const logout = async () => {
   try {
     authStore.logout()
-    await router.push('/login')
+    await router.push('/auth/login')
     notifySuccess('Logout realizado com sucesso')
   } catch (error) {
     console.log(error)

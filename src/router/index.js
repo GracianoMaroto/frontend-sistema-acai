@@ -37,10 +37,10 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     const auth = useAuthStore()
 
     if (to.meta.requiresAuth && !auth.isAuthenticated) {
-      return '/login'
+      return '/auth/login'
     }
 
-    if (auth.isAuthenticated && to.path === '/login') {
+    if (auth.isAuthenticated && to.path === '/auth/login') {
       return '/dashboard'
     }
 
