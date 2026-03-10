@@ -1,8 +1,10 @@
 import axios from 'axios'
+import { boot } from 'quasar/wrappers'
 import { useAuthStore } from 'stores/auth'
 
 const api = axios.create({
   baseURL: 'https://sistema-acai-backend.onrender.com',
+  timeout: 10000,
 })
 
 api.interceptors.request.use((config) => {
@@ -13,6 +15,9 @@ api.interceptors.request.use((config) => {
   }
 
   return config
+})
+export default boot(({ app }) => {
+  app.config.globalProperties.$api = api
 })
 
 export { api }
