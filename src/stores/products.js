@@ -9,6 +9,16 @@ export const useProductStore = defineStore('product', {
     metrics: null,
     error: null,
   }),
+  getters: {
+    allVariants: (state) => {
+      return state.products.flatMap((p) =>
+        p.variants.map((v) => ({
+          ...v,
+          product: p,
+        })),
+      )
+    },
+  },
 
   actions: {
     async fetchProducts() {

@@ -1,0 +1,43 @@
+.orders-page {
+  padding: 20px;
+}
+
+.product-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.product-card {
+  border-radius: 14px;
+}
+
+.product-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.product-description {
+  font-size: 13px;
+  color: #777;
+}
+
+.variant-item {
+  border-left: 2px solid #eee;
+  padding-left: 16px;
+  margin-bottom: 12px;
+}
+
+.variant-name {
+  font-weight: 500;
+}
+
+.variant-stock {
+  font-size: 12px;
+  color: #666;
+}
+.product-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}

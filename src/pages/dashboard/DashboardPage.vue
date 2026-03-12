@@ -1,5 +1,5 @@
 <template>
-  <q-page class="q-pa-lg">
+  <q-page class="orders-page">
     <div class="q-mb-lg">
       <div class="user-name">Visão Geral</div>
       <div class="section-title">Dashboard</div>

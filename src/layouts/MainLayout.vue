@@ -35,9 +35,16 @@
 
         <q-item clickable to="/products" v-if="authStore.isAdmin">
           <q-item-section avatar>
-            <q-icon name="inventory" />
+            <q-icon name="local_mall" />
           </q-item-section>
           <q-item-section class="text-weight-medium"> Produtos </q-item-section>
+        </q-item>
+
+        <q-item clickable to="/stock" v-if="authStore.isAdmin">
+          <q-item-section avatar>
+            <q-icon name="inventory" />
+          </q-item-section>
+          <q-item-section class="text-weight-medium"> Stock </q-item-section>
         </q-item>
 
         <q-item clickable to="/orders">
