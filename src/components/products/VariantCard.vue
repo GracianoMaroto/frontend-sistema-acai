@@ -13,7 +13,7 @@
 
           <div>Custo: R$ {{ cost.toFixed(2) }}</div>
 
-          <div>Lucro: R$ {{ lucro }}</div>
+          <div :class="lucro >= 0 ? 'text-positive' : 'text-negative'">Lucro: R$ {{ lucro }}</div>
 
           <div>Margem: {{ margem }}%</div>
         </div>
@@ -33,12 +33,12 @@ const props = defineProps({
 
 const price = computed(() => {
   const p = props.variant?.prices?.[0]?.price
-  return Number(p) || 0
+  return parseFloat(p) || 0
 })
 
 const cost = computed(() => {
   const c = props.variant?.prices?.[0]?.cost
-  return Number(c) || 0
+  return parseFloat(c) || 0
 })
 
 const lucro = computed(() => {

@@ -62,6 +62,7 @@ import { computed, ref } from 'vue'
 import { useStockStore } from 'src/stores/stock'
 import { useProductStore } from 'src/stores/products'
 
+// eslint-disable-next-line no-unused-vars
 const props = defineProps({
   modelValue: Boolean,
 })
@@ -79,10 +80,12 @@ const form = ref({
 })
 
 const variants = computed(() => {
-  return productStore.allVariants.map((v) => ({
-    label: `${v.product.name} - ${v.name}`,
-    value: v.id,
-  }))
+  return productStore.allVariants
+    .filter((v) => v.active !== false && v.product?.active !== false)
+    .map((v) => ({
+      label: `${v.product.name} - ${v.name}`,
+      value: v.id,
+    }))
 })
 
 function close() {
@@ -90,6 +93,7 @@ function close() {
 }
 
 async function submit() {
+  console.log(form.value)
   await stockStore.createMovement(form.value)
   close()
 }

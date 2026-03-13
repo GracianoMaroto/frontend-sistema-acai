@@ -10,6 +10,9 @@ export const useProductStore = defineStore('product', {
     error: null,
   }),
   getters: {
+    activeProducts: (state) => {
+      return state.products.filter((p) => p.active)
+    },
     allVariants: (state) => {
       return state.products.flatMap((p) =>
         p.variants.map((v) => ({
@@ -122,7 +125,7 @@ export const useProductStore = defineStore('product', {
           },
         })
 
-        this.products = this.products.filter((p) => p.id !== id)
+        await this.fetchProducts()
       } catch (error) {
         this.error = error.response?.data?.message || 'Erro ao excluir produto'
       } finally {

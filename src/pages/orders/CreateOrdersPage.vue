@@ -276,10 +276,26 @@ const order = ref({
 })
 
 const productVariants = computed(() => {
-  return channelPrices.value.map((price) => ({
-    ...price.productVariant,
-    price: price.price,
-  }))
+  const channel = saleChannelOptions.value.find((c) => c.id === order.value.saleChannelId)
+
+  return channelPrices.value
+    .filter((price) => price.productVariant?.active !== false)
+    .map((price) => {
+      let finalPrice = Number(price.price)
+
+      if (channel?.modifierType === 'MARKUP') {
+        finalPrice = finalPrice * (1 + Number(channel.priceModifier) / 100)
+      }
+
+      if (channel?.modifierType === 'DISCOUNT') {
+        finalPrice = finalPrice * (1 - Number(channel.priceModifier) / 100)
+      }
+
+      return {
+        ...price.productVariant,
+        price: finalPrice,
+      }
+    })
 })
 const saleChannelOptions = computed(() => orderStore.saleChannels)
 const canFinalize = computed(() => {

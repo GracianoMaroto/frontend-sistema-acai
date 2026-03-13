@@ -66,7 +66,13 @@
         </q-card>
       </div>
     </div>
-    <apexchart type="line" height="300" :options="chartOptions" :series="chartSeries" />
+    <apexchart
+      v-if="chartSeries.length"
+      type="line"
+      height="300"
+      :options="chartOptions"
+      :series="chartSeries"
+    />
   </q-page>
 </template>
 

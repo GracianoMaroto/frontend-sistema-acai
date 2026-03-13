@@ -4,7 +4,10 @@
       <div class="user-name">
         {{ product.name }}
       </div>
-      <q-btn flat round icon="edit" color="primary" @click="$emit('edit', product)" />
+      <div>
+        <q-btn flat round icon="edit" color="primary" @click="$emit('edit', product)" />
+        <q-btn flat round icon="delete" color="negative" @click="$emit('delete', product)" />
+      </div>
     </q-card-section>
 
     <q-separator />
@@ -27,12 +30,9 @@ const props = defineProps({
   product: Object,
 })
 
-const emit = defineEmits(['edit'])
+const emit = defineEmits(['edit', 'delete'])
 
-function editVariant(variant) {
-  emit('edit', {
-    ...props.product,
-    editingVariant: variant.id,
-  })
+function editVariant() {
+  emit('edit', props.product)
 }
 </script>

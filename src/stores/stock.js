@@ -20,6 +20,11 @@ export const useStockStore = defineStore('stock', {
       }
     },
 
+    async getMovementsByVariant(variantId) {
+      const { data } = await api.get(`/stock/variant/${variantId}`)
+      return data
+    },
+
     async createMovement(payload) {
       await api.post('/stock/stock-movements', payload)
 

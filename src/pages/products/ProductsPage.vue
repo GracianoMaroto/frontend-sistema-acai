@@ -7,15 +7,18 @@
     </div>
 
     <div class="product-list">
-      <product-card
-        v-for="product in productStore.products"
+      <ProductCard
+        v-for="product in productStore.activeProducts"
         :key="product.id"
         :product="product"
         @edit="openEdit"
+        @delete="handleDelete"
       />
     </div>
 
     <ProductDialog v-model="dialog" :product="selected" />
+
+    <ConfirmDialog ref="confirmDialogRef" />
   </q-page>
 </template>
 
@@ -25,11 +28,13 @@ import { useProductStore } from 'src/stores/products'
 
 import ProductDialog from 'src/components/products/ProductDialog.vue'
 import ProductCard from 'src/components/products/ProductCard.vue'
+import ConfirmDialog from 'src/components/SystemConfirm.vue'
 
 const productStore = useProductStore()
 
 const dialog = ref(false)
 const selected = ref(null)
+const confirmDialogRef = ref(null)
 
 function openCreate() {
   selected.value = null
@@ -41,8 +46,18 @@ function openEdit(product) {
   dialog.value = true
 }
 
+async function handleDelete(product) {
+  const confirmed = await confirmDialogRef.value.show(
+    'Excluir produto',
+    `Deseja realmente excluir ${product.name}?`,
+  )
+
+  if (!confirmed) return
+
+  await productStore.deleteProduct(product.id)
+}
+
 onMounted(() => {
   productStore.fetchProducts()
-  console.log('products', productStore.products)
 })
 </script>
