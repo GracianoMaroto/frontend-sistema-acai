@@ -22,9 +22,14 @@
         </div>
 
         <div class="summary-right">
-          <div class="summary-total">R$ {{ total.toFixed(2) }}</div>
+          <div class="text-right">
+            <div>Subtotal: R$ {{ subtotal.toFixed(2) }}</div>
 
-          <div class="status-badge" :class="'status-' + order.orderStatus?.name">
+            <div v-if="discount > 0">Desconto: - R$ {{ discount.toFixed(2) }}</div>
+
+            <div class="summary-total">Total: R$ {{ total.toFixed(2) }}</div>
+          </div>
+          <div class="status-badge text-center" :class="'status-' + order.orderStatus?.name">
             {{ order.orderStatus?.name }}
           </div>
         </div>
@@ -68,7 +73,7 @@
             <q-input
               v-model.number="newPaymentAmount"
               type="number"
-              step="0.01"
+              step="0.1"
               label="Amount"
               prefix="R$"
               outlined
@@ -144,12 +149,19 @@ const orderStore = useOrdersStore()
 
 const order = ref(null)
 
-const total = computed(() => {
+const subtotal = computed(() => {
   if (!order.value) return 0
 
   return order.value.items.reduce((sum, item) => {
     return sum + Number(item.unitPrice) * item.quantity
   }, 0)
+})
+const total = computed(() => {
+  return Number(order.value?.totalAmount || 0)
+})
+const discount = computed(() => {
+  const result = subtotal.value - total.value
+  return result > 0 ? result : 0
 })
 
 const canStart = computed(() => order.value?.orderStatus.name === 'Pendente')
@@ -228,7 +240,7 @@ const removePayment = async (paymentId) => {
 const paymentProgress = computed(() => {
   const totalPaid = order.value.payments.reduce((sum, p) => sum + Number(p.amount), 0)
 
-  return totalPaid / total.value
+  return totalPaid / Number(order.value.totalAmount)
 })
 
 const finalizeOrder = async () => {

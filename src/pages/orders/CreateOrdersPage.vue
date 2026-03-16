@@ -109,7 +109,7 @@
         <q-card-section>
           <div class="cart-total">
             <div>Total</div>
-            <div>R$ {{ total.toFixed(2) }}</div>
+            <div>R$ {{ finalTotal.toFixed(2) }}</div>
           </div>
         </q-card-section>
 
@@ -126,6 +126,7 @@
             outlined
             dense
           />
+          <q-input v-model.number="discount" label="Desconto" prefix="R$" outlined dense />
 
           <q-input
             v-model.number="paymentAmount"
@@ -216,6 +217,7 @@ const paymentAmount = ref(0)
 const paymentMethods = ref([])
 const customerOptions = ref([])
 const customerDialog = ref(false)
+const discount = ref(0)
 
 const customerForm = ref({
   name: '',
@@ -368,7 +370,10 @@ const total = computed(() => {
     return sum + Number(variant.price) * item.quantity
   }, 0)
 })
-
+const finalTotal = computed(() => {
+  const result = total.value - discount.value
+  return result < 0 ? 0 : result
+})
 const submitOrder = async () => {
   try {
     submitting.value = true
@@ -376,6 +381,7 @@ const submitOrder = async () => {
     const payload = {
       saleChannelId: order.value.saleChannelId,
       customerId: order.value.customerId || undefined,
+      totalAmount: Number(finalTotal.value.toFixed(2)),
       items: order.value.items.map((i) => ({
         productVariantId: i.productVariantId,
         quantity: Number(i.quantity),
@@ -385,7 +391,7 @@ const submitOrder = async () => {
           ? [
               {
                 paymentMethodId: selectedPaymentMethod.value,
-                amount: Number(paymentAmount.value).toFixed(2),
+                amount: paymentAmount.value,
               },
             ]
           : undefined,
