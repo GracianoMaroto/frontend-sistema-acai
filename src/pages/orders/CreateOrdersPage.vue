@@ -385,7 +385,7 @@ const submitOrder = async () => {
           ? [
               {
                 paymentMethodId: selectedPaymentMethod.value,
-                amount: String(Number(paymentAmount.value).toFixed(2)),
+                amount: Number(paymentAmount.value).toFixed(2),
               },
             ]
           : undefined,

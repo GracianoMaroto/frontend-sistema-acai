@@ -3,9 +3,8 @@ import { boot } from 'quasar/wrappers'
 import { useAuthStore } from 'stores/auth'
 
 const api = axios.create({
-  // baseURL: 'https://sistema-acai-backend.onrender.com',
-  // timeout: 10000,
-  baseURL: 'http://localhost:3000',
+  baseURL: 'https://sistema-acai-backend.onrender.com',
+  timeout: 10000,
 })
 
 api.interceptors.request.use((config) => {
